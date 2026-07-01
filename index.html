@@ -41,6 +41,7 @@ body{font-family:var(--ff-b);background:var(--bg);color:var(--ink);line-height:1
 
 /* Ken Burns auto-zoom on active gallery image (#4) */
 @keyframes kb{from{transform:scale(1) translate(0,0)} to{transform:scale(1.08) translate(-1.2%,-0.8%)}}
+@keyframes kb-subtle{from{transform:scale(1) translate(0,0)} to{transform:scale(1.02) translate(-0.4%,-0.3%)}}
 .g-main img{width:100%;height:100%;object-fit:cover;animation:kb 7s ease-in-out alternate infinite;will-change:transform;transform-origin:center center}
 @media(prefers-reduced-motion:reduce){.g-main img{animation:none}}
 /* Dynamic rotating badge fade (#5) */
@@ -161,7 +162,8 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .announce{position:sticky;top:0;z-index:61;background:var(--heading);color:#f3ede4;font-size:12.5px;font-weight:500;text-align:center;height:38px;overflow:hidden}
 .announce-track{display:flex;flex-direction:column;animation:rot 9s infinite}
 .announce-item{height:38px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0}
-.announce .tp{color:var(--green-tp);font-weight:700}
+.announce .tp{color:var(--green-tp);font-weight:700;display:inline-flex;align-items:center}
+.tp-logo-img{height:13px;width:auto;display:block}
 .announce code{background:rgba(243,237,228,.14);padding:2px 8px;border-radius:3px;letter-spacing:.08em;font-weight:700}
 @keyframes rot{0%,28%{transform:translateY(0)}33%,61%{transform:translateY(-38px)}66%,94%{transform:translateY(-76px)}100%{transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.announce-track{animation:none}}
@@ -194,8 +196,34 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .hero{display:block;padding-top:14px}
 
 /* GALLERY (image-led; controls BELOW image) */
-.gallery{margin-bottom:20px}
-.g-main{position:relative;background:var(--surface);border-radius:var(--radius);overflow:hidden;height:45vh;max-height:415px;min-height:350px}
+.gallery{margin-bottom:10px}
+.g-main{position:relative;background:#EFEFEF;border-radius:var(--radius);overflow:hidden;height:45vh;max-height:415px;min-height:350px;touch-action:pan-y;cursor:pointer}
+.g-expand{position:absolute;bottom:42px;right:12px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);border:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.g-loved-strip{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(15,10,4,.82);backdrop-filter:blur(2px);color:#fff;font-size:12px;font-weight:700;letter-spacing:.01em;padding:9px 12px}
+.g-loved-strip svg{flex-shrink:0;color:var(--sale)}
+.g-expand:hover{background:#fff}
+
+/* FULLSCREEN LIGHTBOX */
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(15,10,4,.96);display:none;flex-direction:column;align-items:center;justify-content:center;touch-action:pan-y}
+.lightbox.show{display:flex}
+.lb-close{position:absolute;top:16px;right:16px;z-index:3;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;display:flex;align-items:center;justify-content:center}
+.lb-close:hover{background:rgba(255,255,255,.22)}
+.lb-counter{position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.lb-stage{width:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y;max-height:calc(100vh - 160px)}
+.lb-stage img{max-width:92vw;max-height:100%;object-fit:contain;border-radius:6px}
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;display:flex;align-items:center;justify-content:center}
+.lb-arrow:hover{background:rgba(255,255,255,.22)}
+.lb-prev{left:10px}
+.lb-next{right:10px}
+.lb-thumbs{display:flex;gap:8px;padding:14px 16px;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.lb-thumbs::-webkit-scrollbar{display:none}
+.lb-thumbs img{width:56px;height:56px;object-fit:cover;border-radius:6px;opacity:.45;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+.lb-thumbs img.active{opacity:1;border-color:var(--bronze)}
+@media(min-width:820px){
+  .lb-arrow{width:50px;height:50px}
+  .lb-prev{left:24px}
+  .lb-next{right:24px}
+}
 .g-main img{width:100%;height:100%;object-fit:cover}
 .g-badges{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:2;transition:opacity .35s ease}
 .g-badges.dim{opacity:.12;pointer-events:none}
@@ -210,7 +238,7 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .thumbs::-webkit-scrollbar{display:none}
 .thumb{flex:0 0 72px;display:flex;flex-direction:column;align-items:center;gap:4px;border:none;background:none;padding:0;cursor:pointer;opacity:.64;transition:opacity .18s}
 .thumb.active{opacity:1}
-.th-img{width:72px;height:52px;border-radius:6px;overflow:hidden;border:2px solid var(--line);transition:border-color .18s,box-shadow .18s;flex-shrink:0}
+.th-img{width:72px;height:52px;border-radius:6px;overflow:hidden;border:2px solid var(--line);transition:border-color .18s,box-shadow .18s;flex-shrink:0;background:#EFEFEF}
 .thumb.active .th-img{border-color:var(--bronze);box-shadow:0 0 0 1px var(--bronze)}
 .thumb:hover:not(.active){opacity:.9}
 .thumb:hover:not(.active) .th-img{border-color:var(--ink-3)}
@@ -221,30 +249,38 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 
 /* PRODUCT INFO (order tuned so title+price+CTA hit first fold) */
 .pinfo{padding-top:2px}
-.title{font-size:24.7px;margin-bottom:14px;line-height:1.05}
+.title{font-size:22.2px;margin-bottom:11px;line-height:1.05}
 .finish{font-family:var(--ff-d);font-style:italic;font-size:16px;color:var(--ink-2);margin-bottom:8px}
 .rating{display:flex;align-items:center;gap:9px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:10px;min-height:22px}
 .rating::-webkit-scrollbar{display:none}
-.rating--top{margin:0 0 10px}
+.rating--top{margin:0 0 8px}
 .rate-badge{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--heading);flex-shrink:0;white-space:nowrap}
 .rate-badge .rs1{color:var(--star);font-size:15px;line-height:1}
 .stars{color:var(--star);font-size:15px;letter-spacing:1px}
 .r-link{font-size:13px;color:var(--ink-2);text-decoration:underline;text-underline-offset:2px;flex-shrink:0;white-space:nowrap}
-.loved{font-size:11px;font-weight:700;color:var(--green);background:rgba(16,132,116,.09);padding:3px 9px;border-radius:100px;flex-shrink:0;white-space:nowrap}
 .tp-badge-inline{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-2);text-decoration:none;background:#f0fbf7;border:1px solid rgba(0,182,122,.25);padding:3px 10px 3px 8px;border-radius:100px;flex-shrink:0;white-space:nowrap}
 .tp-badge-inline b{color:#00b67a;font-weight:700}
 .tp-badge-inline:hover{background:#e3f8f0}
+.tp-logo-img-inline{height:11px;width:auto;display:inline-block;vertical-align:-1px;margin-left:3px}
 
-.price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:3px}
+.price{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0 16px}
 .p-now{font-size:33px;font-weight:700;color:var(--heading);line-height:1;letter-spacing:-.01em} /* HK Grotesk (brand) */
-.p-was{font-size:18px;color:var(--ink-3);text-decoration:line-through;font-weight:400}
-.p-save{font-size:12px;font-weight:700;color:var(--sale);background:rgba(154,37,21,.08);padding:3px 8px;border-radius:4px}
+.p-was{font-size:16px;color:var(--ink-3);text-decoration:line-through;font-weight:400;line-height:1}
+.p-save{font-size:12px;font-weight:700;color:var(--sale);background:rgba(154,37,21,.08);padding:4px 9px;border-radius:5px;line-height:1.2}
 .p-sub{font-size:12.5px;color:var(--ink-3);margin-bottom:10px}
 .p-sub b{color:var(--ink-2);font-weight:600}
 
-.values{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.values li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--ink-2);line-height:1.4}
-.values svg{flex-shrink:0;margin-top:2px;color:var(--bronze)}
+/* KEY HIGHLIGHTS - compact pill-card rows, icon + bold headline + light detail */
+.kh-list{display:flex;flex-direction:column;gap:4px;margin-bottom:7px}
+.kh-item{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;padding:5px 9px;overflow:hidden}
+.kh-ic{width:22px;height:22px;border-radius:50%;background:var(--bronze);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.kh-ic svg{width:17px;height:17px}
+.kh-text{font-size:13px;color:var(--ink);line-height:1.3;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kh-text b{font-weight:700;color:var(--heading)}
+.kh-text .sep{color:var(--ink-3);margin:0 2px}
+.kh-text .detail{color:var(--ink-3)}
+.kh-info{flex-shrink:0;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-3);background:none;border:none;cursor:pointer}
+.kh-info:hover{color:var(--bronze)}
 
 .buy-row{display:flex;gap:10px;margin-bottom:8px}
 .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);flex-shrink:0}
@@ -266,7 +302,7 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .promo button{margin-left:auto;min-height:34px;background:var(--bronze);color:#fff;border:none;border-radius:5px;padding:6px 13px;font-size:11.5px;font-weight:700}
 .promo code{font-weight:700;color:var(--bronze);letter-spacing:.06em}
 
-.swatch-row{margin-bottom:12px;margin-top:6px}
+.swatch-row{margin-bottom:9px;margin-top:4px}
 .swatch-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
 .swatch{display:inline-flex;align-items:center;gap:9px;min-height:35px;border:2px solid var(--bronze);border-radius:var(--radius);padding:3px 12px 3px 6px;background:var(--surface)}
 .swatch .chip{width:23px;height:23px;border-radius:4px;background:linear-gradient(150deg,#c9a44e 0%,#9a6a36 38%,#6e3a1e 64%,#241c17 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
@@ -345,7 +381,6 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .pp-offers summary>svg{color:var(--bronze);flex-shrink:0}
 .pp-offers summary b{font-weight:700}
 .pp-badge{font-size:11px;font-weight:700;color:var(--green);background:rgba(16,132,116,.1);padding:3px 9px;border-radius:100px}
-.pp-chev{margin-left:auto;color:var(--ink-3);transition:transform .2s;font-size:11px}
 .pp-offers[open] .pp-chev{transform:rotate(180deg)}
 .pp-offer{display:flex;align-items:center;gap:9px;padding:9px 15px;font-size:13px;color:var(--ink-2);border-top:1px solid var(--line)}
 .pp-offer>svg{color:var(--green);flex-shrink:0}
@@ -355,11 +390,7 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .pp-klarna{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);margin-bottom:11px}
 .pp-klarna>svg{color:var(--bronze);flex-shrink:0}
 .pp-methods{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.pm-logo{font-size:10.5px;font-weight:800;letter-spacing:.02em;padding:6px 9px;border-radius:6px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink-2);line-height:1}
-.pm-shop{background:#5a31f4;color:#fff;border-color:#5a31f4}
-.pm-klarna{background:#ffb3c7;color:#0b051e;border-color:#ffb3c7}
-.pm-apple{background:#000;color:#fff;border-color:#000}
-.pm-gpay{background:#fff;color:#5f6368}
+
 .pp-secure{display:flex;align-items:center;gap:7px;margin-top:11px;font-size:11.5px;color:var(--ink-3)}
 .pp-secure svg{flex-shrink:0;color:var(--green)}
 
@@ -368,7 +399,7 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .ministrip-track{display:flex;width:max-content;animation:msscroll 34s linear infinite}
 .ministrip:hover .ministrip-track{animation-play-state:paused}
 .ms-item{display:flex;align-items:center;gap:8px;padding:9px 17px;font-size:13px;color:var(--ink-2);white-space:nowrap;border-right:1px solid var(--line)}
-.ms-item .ms-stars{color:var(--star);font-size:10px;letter-spacing:.5px;flex-shrink:0}
+.ms-item .ms-stars{color:#00b67a;font-size:10px;letter-spacing:.5px;flex-shrink:0}
 .ms-item q{quotes:none;color:var(--ink)}
 .ms-item cite{font-style:normal;color:var(--ink-3)}
 @keyframes msscroll{to{transform:translateX(-50%)}}
@@ -406,7 +437,7 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 
 /* ============ PARALLAX STORY (The Finish) ============ */
 .parallax-story{position:relative;min-height:170vh;background:#1b1408;color:#f2ece3;overflow:clip;isolation:isolate;width:100vw;margin-left:calc(50% - 50vw)}
-.parallax-story::before{content:'';position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(22,16,7,.88),rgba(22,16,7,.72) 42%,rgba(22,16,7,.95)),url('./assets-web/TRBS00001A_20_2-BrsUvFRX.jpg') center/cover;filter:saturate(.95) contrast(1.05)}
+.parallax-story::before{content:'';position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(22,16,7,.88),rgba(22,16,7,.72) 42%,rgba(22,16,7,.95)),url('./assets-web/cabinet-patina-closeup.jpg') center/cover;filter:saturate(.95) contrast(1.05)}
 .parallax-story::after{content:'';position:absolute;inset:0;z-index:-1;background:radial-gradient(70% 54% at 50% 38%,rgba(183,126,69,.28),transparent 62%);pointer-events:none}
 .parallax-pin{position:sticky;top:0;min-height:100svh;display:grid;place-items:center;padding:78px 16px 90px}
 .parallax-shell{width:min(1180px,100%);display:grid;grid-template-columns:1fr;gap:26px;align-items:center}
@@ -420,8 +451,8 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .px-card{position:absolute;overflow:hidden;border-radius:8px;border:1px solid rgba(232,201,164,.18);box-shadow:0 28px 64px rgba(0,0,0,.42);will-change:transform;backface-visibility:hidden}
 .px-card img{width:100%;height:100%;object-fit:cover}
 .px-card--hero{width:min(290px,62vw);aspect-ratio:3/4;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3}
-.px-card--left{width:148px;aspect-ratio:4/5;left:0;top:6%;z-index:2}
-.px-card--right{width:140px;aspect-ratio:1;right:0;bottom:12%;z-index:4}
+.px-card--left{width:min(150px,34vw);aspect-ratio:3/4;left:8%;top:20%;z-index:4}
+.px-card--right{width:min(150px,34vw);aspect-ratio:3/4;right:8%;bottom:18%;z-index:4}
 .px-disk{position:absolute;border-radius:50%;border:1px solid rgba(232,201,164,.3);will-change:transform}
 .px-disk--one{width:140px;height:140px;right:6%;top:2%;background:rgba(183,126,69,.08)}
 .px-disk--two{width:84px;height:84px;left:4%;bottom:4%;background:rgba(183,126,69,.06)}
@@ -432,8 +463,8 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
   .parallax-scene{min-height:620px}
   .parallax-story::before{background-attachment:scroll,fixed}
   .px-card--hero{width:380px}
-  .px-card--left{width:230px;left:2%;top:12%}
-  .px-card--right{width:208px;right:1%;bottom:8%}
+  .px-card--left{width:170px;left:0%;top:14%}
+  .px-card--right{width:170px;right:0%;bottom:12%}
   .px-disk--one{width:220px;height:220px}
 }
 @media(prefers-reduced-motion:reduce){.px-card,.px-disk,.px-label{transform:none!important}.px-card--hero{transform:translate(-50%,-50%)!important}}
@@ -511,19 +542,21 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .revsummary{display:grid;grid-template-columns:1fr;gap:24px;background:var(--surface);border:1px solid var(--line-2);border-radius:16px;padding:24px 22px;margin-bottom:24px;overflow:hidden}
 .revsum-left{display:flex;flex-direction:column;gap:14px;min-width:0}
 .revsum-score-row{display:flex;align-items:flex-end;gap:14px}
-.revsum-score{font-size:46px;font-weight:700;color:var(--heading);line-height:1;letter-spacing:-.02em}
-.revsum-score-meta{display:flex;flex-direction:column;gap:3px;padding-bottom:4px}
-.revsum-score-meta .rs{color:var(--star);font-size:15px;letter-spacing:1.5px}
-.revsum-score-meta span{font-size:12px;color:var(--ink-3)}
+.revsum-score{font-size:46px;font-weight:800;color:#000;line-height:1;letter-spacing:-.02em;font-family:var(--ff-b)}
+.revsum-score-meta{display:flex;flex-direction:column;gap:4px;padding-bottom:4px}
+.revsum-score-meta .tp-stars-row{display:flex;gap:3px}
+.revsum-score-meta .tp-star-tile{width:20px;height:20px;background:#00b67a;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.revsum-score-meta .tp-star-tile svg{width:13px;height:13px;fill:#fff}
+.revsum-score-meta span.rb-sub{font-size:12px;color:var(--ink-3)}
 .revsum-bars{display:flex;flex-direction:column;gap:7px}
 .revsum-bar-row{display:flex;align-items:center;gap:9px}
 .revsum-bar-row .rb-label{font-size:11.5px;color:var(--ink-3);width:14px;text-align:right;flex-shrink:0}
 .revsum-bar-track{flex:1;height:7px;border-radius:100px;background:var(--surface-2);overflow:hidden}
-.revsum-bar-fill{height:100%;border-radius:100px;background:var(--star)}
+.revsum-bar-fill{height:100%;border-radius:100px;background:#00b67a}
 .revsum-bar-row .rb-count{font-size:11px;color:var(--ink-3);width:24px;flex-shrink:0}
 .revsum-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
 .revsum-tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink);background:var(--surface-2);border:1px solid var(--line-2);border-radius:100px;padding:5px 11px}
-.revsum-tag b{color:var(--bronze);font-weight:700}
+.revsum-tag b{color:#00875a;font-weight:700}
 .revsum-divider{height:1px;background:var(--line-2)}
 .revsum-tp{display:flex;align-items:center;gap:14px;padding:18px;background:linear-gradient(135deg,#f0fbf7,#e8f9f1);border:1px solid rgba(0,182,122,.25);border-radius:14px;flex-wrap:wrap;row-gap:12px}
 .revsum-tp-stars{display:flex;gap:3px;flex-shrink:0}
@@ -531,8 +564,10 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .revsum-tp-star svg{width:16px;height:16px;fill:#fff}
 .revsum-tp-body{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 140px}
 .revsum-tp-body .tp-title{font-size:15px;font-weight:700;color:var(--ink);display:block;line-height:1.3}
+.tp-logo-img-title{height:17px;width:auto;display:block}
 .revsum-tp-body .tp-sub{font-size:12.5px;color:var(--ink-3);line-height:1.4}
-.revsum-tp-cta{flex-shrink:0;font-size:12px;font-weight:700;color:#00875a;text-decoration:none;white-space:nowrap;border:1.5px solid #00b67a;border-radius:100px;padding:8px 16px;margin-left:auto}
+.revsum-tp-cta{flex-shrink:0;font-size:12px;font-weight:700;color:#00875a;text-decoration:none;white-space:nowrap;border:1.5px solid #00b67a;border-radius:100px;padding:8px 16px;margin-left:auto;display:inline-flex;align-items:center}
+.tp-logo-img-cta{height:13px;width:auto;display:block}
 .revsum-tp-cta:hover{background:#00b67a;color:#fff}
 @media(min-width:820px){
   .revsummary{grid-template-columns:1.1fr 1fr;gap:32px;padding:32px}
@@ -546,8 +581,9 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .revcard2-meta{flex:1;min-width:0}
 .revcard2-name{font-size:13.5px;font-weight:700;color:var(--heading);line-height:1.2}
 .revcard2-time{font-size:11px;color:var(--ink-3)}
-.revcard2-score{display:flex;align-items:center;gap:4px;flex-shrink:0;font-size:13px;font-weight:700;color:var(--heading)}
-.revcard2-score .rs{color:var(--star);font-size:12px}
+.revcard2-stars{display:flex;gap:2px;flex-shrink:0}
+.revcard2-stars .rc-star-tile{width:16px;height:16px;background:#00b67a;border-radius:2px;display:flex;align-items:center;justify-content:center}
+.revcard2-stars .rc-star-tile svg{width:10px;height:10px;fill:#fff}
 .revcard2 p{font-size:13.5px;color:var(--ink-2);line-height:1.55}
 .revgrid{display:flex;flex-direction:column;gap:12px}
 .revsee-all{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:48px;border:1px solid var(--line-2);border-radius:100px;background:var(--surface);font-size:13px;font-weight:600;color:var(--heading);margin-top:16px}
@@ -568,7 +604,6 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .cr .l{color:rgba(239,231,218,.66)}
 .cr .a{font-variant-numeric:tabular-nums}
 .ct{display:flex;justify-content:space-between;padding:14px 0 0;margin-top:3px;border-top:1px solid rgba(255,255,255,.28);font-weight:700;font-size:14px}
-.ptnote{background:rgba(183,126,69,.16);border-left:2px solid var(--tan);border-radius:0 5px 5px 0;padding:11px 13px;font-size:12px;color:rgba(239,231,218,.85);margin-top:14px;line-height:1.5}
 .pt-copy p{font-size:14.5px;color:var(--ink-2);line-height:1.7;margin-bottom:12px}
 .pt-vals{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:14px}
 .pt-vals li{display:flex;gap:10px;align-items:center;font-size:13px;font-weight:600;color:var(--ink)}
@@ -580,6 +615,9 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .pbar .pl b{font-family:var(--ff-b);font-size:16px;color:var(--heading);font-variant-numeric:tabular-nums}
 .pbar .track{height:14px;border-radius:100px;background:var(--surface-2);overflow:hidden}
 .pbar .fill{height:100%;border-radius:100px;transition:width .6s ease}
+.price-save-callout{display:flex;align-items:center;gap:10px;background:rgba(16,132,116,.08);border:1px solid rgba(16,132,116,.18);border-radius:12px;padding:13px 16px;margin-bottom:22px;color:var(--green);font-size:13.5px;line-height:1.4}
+.price-save-callout svg{flex-shrink:0}
+.price-save-callout b{font-weight:700}
 
 /* FREQUENTLY BOUGHT TOGETHER */
 .fbt{border:1px solid var(--line-2);border-radius:14px;background:var(--surface);padding:18px;margin-top:14px}
@@ -638,6 +676,18 @@ h1,h2,h3,h4{font-family:var(--ff-d);color:var(--heading);font-weight:400;line-he
 .cmptable td.astra{background:rgba(124,87,35,.08);color:var(--bronze);font-weight:700}
 .cmptable .y{color:var(--green);font-weight:700}
 .cmptable .n{color:var(--ink-3)}
+.cmp-intro{font-size:13px;color:var(--ink-3);line-height:1.6;margin-bottom:18px}
+.cmptable2{width:100%;border-collapse:collapse;font-size:13.5px;min-width:420px}
+.cmptable2 th,.cmptable2 td{padding:16px 10px;text-align:center;border-bottom:1px solid var(--line-2)}
+.cmptable2 tr:last-child td{border-bottom:none}
+.cmptable2 th:first-child,.cmptable2 td:first-child{text-align:left;color:var(--ink);font-weight:600;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase}
+.cmptable2 thead th{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--heading)}
+.cmptable2 thead th.astra{color:var(--bronze)}
+.cmptable2 td.astra b{color:var(--heading);font-weight:700}
+.cmptable2 .cmp-dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--bronze)}
+.cmptable2 .n{color:var(--ink-3)}
+.cmp-source{font-size:11.5px;color:var(--ink-3);margin-top:12px}
+.cmp-source a{color:var(--bronze);text-decoration:underline;text-underline-offset:2px}
 
 /* RAIL */
 .rail{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:6px}
@@ -688,13 +738,14 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 /* STICKY FLOATING PILL - pops up centred above viewport bottom (v5 exact) */
 .stickybar{position:fixed;left:50%;bottom:22px;z-index:70;transform:translateX(-50%) translateY(120%);transition:transform .32s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap}
 .stickybar.show{transform:translateX(-50%) translateY(0);pointer-events:auto}
-.sb-in{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line-2);border-radius:100px;padding:8px 8px 8px 12px;box-shadow:0 4px 28px rgba(43,32,16,.18),0 1px 4px rgba(43,32,16,.08)}
+.sb-in{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line-2);border-radius:calc(var(--radius) + 6px);padding:8px 8px 8px 12px;box-shadow:0 4px 28px rgba(43,32,16,.18),0 1px 4px rgba(43,32,16,.08)}
 .sb-thumb{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block;border:2px solid var(--line-2)}
 .sb-info{display:flex;flex-direction:column;gap:1px;min-width:0}
 .sb-name{font-family:var(--ff-d);font-size:14px;color:var(--heading);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
 .sb-price{font-size:12px;font-weight:700;color:var(--ink)}
 .sb-price s{color:var(--ink-3);font-weight:400;margin-left:4px}
-.sb-btn{min-height:42px;border:none;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:0 20px;flex-shrink:0;color:#fff;background-color:#5a3d1e;background-image:linear-gradient(rgba(74,48,22,.28),rgba(40,25,10,.5)),var(--wood);background-size:cover;background-position:center;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.sb-save{font-size:10.5px;font-weight:700;color:var(--sale);background:rgba(154,37,21,.08);padding:2px 6px;border-radius:4px;margin-left:3px}
+.sb-btn{min-height:42px;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:0 20px;flex-shrink:0;color:#fff;background-color:#5a3d1e;background-image:linear-gradient(rgba(74,48,22,.28),rgba(40,25,10,.5)),var(--wood);background-size:cover;background-position:center;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .sb-btn:hover{background-image:linear-gradient(rgba(50,32,14,.42),rgba(28,17,6,.6)),var(--wood)}
 
 /* SLIM CONSENT */
@@ -732,22 +783,32 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   .crumb{display:flex;max-width:1280px;margin:0 auto;padding:12px 16px;font-size:12px;color:var(--ink-3);gap:7px;align-items:center}
   .crumb a{text-decoration:none;color:var(--ink-3)}.crumb a:hover{color:var(--bronze)}.crumb .sep{opacity:.5}
 
-  .hero{display:grid;grid-template-columns:1fr 440px;gap:48px;align-items:start;padding-top:8px}
-  .gallery{position:sticky;top:104px}
-  .g-main{height:auto;max-height:none;aspect-ratio:1/1;min-height:0}
+  .hero{display:grid;grid-template-columns:1fr 500px;gap:48px;align-items:start;padding-top:8px}
+  .gallery{position:sticky;top:104px;width:100%;display:flex;flex-direction:row;gap:10px;align-items:flex-start}
+  .g-main{height:auto;max-height:none;aspect-ratio:1/1;min-height:0;flex:1}
+  .thumbstrip{margin-top:0;display:flex;flex-direction:column;justify-content:flex-start;order:-1;flex-shrink:0;position:relative}
+  .thumbs{flex-direction:column;overflow-x:visible;overflow-y:hidden;padding-bottom:0;gap:7px;max-height:630px;height:auto;scroll-behavior:smooth}
   .thumbs{padding:0}
+  .thumb-more{display:flex;align-items:center;justify-content:center;width:84px;height:22px;margin-top:4px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:6px;cursor:pointer;color:var(--ink-3);font-size:10px;font-weight:600;letter-spacing:.04em;gap:4px;flex-shrink:0;transition:background .15s,color .15s}
+  .thumb-more:hover{background:var(--line-2);color:var(--ink)}
+  .thumb-more svg{width:12px;height:12px;flex-shrink:0}
+  .thumb-more.hidden{display:none}
   .thumb{flex:0 0 84px;gap:5px}
   .th-img{width:84px;height:62px}
   .th-lbl{font-size:9px}
   .thumb:hover:not(.active){opacity:.9}
   .pinfo{position:sticky;top:84px}
-  .title{font-size:30.4px}.p-now{font-size:36px}
+  .title{font-size:27.4px}.p-now{font-size:36px}
 
-  .secnav{top:92px}.secnav-in{justify-content:flex-start}
+  .secnav{top:92px}.secnav-in{justify-content:space-evenly}
+
+  .stickybar{left:auto;right:32px;bottom:28px;transform:translateY(120%)}
+  .stickybar.show{transform:translateY(0);pointer-events:auto}
 
   .ap{padding:64px 0}
   .ap-h{font-size:34px}
   .ap-head{max-width:760px}
+  #compare .ap-head, #delivery .ap-head, #faq .ap-head{max-width:860px;margin-left:auto;margin-right:auto}
   .dim-cards{grid-template-columns:1fr 1fr}
   .ap-split{display:grid;grid-template-columns:1fr 1fr;gap:56px}
   .ap-split.rev .media{order:2}
@@ -768,9 +829,14 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   .qcard{margin:-110px 0 0 56px;max-width:520px;padding:42px}
   .qcard p{font-size:27px}
   .qcard-reviews{min-height:160px}
-  .pt{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+  .pt{display:flex;flex-direction:column;gap:28px;max-width:680px;margin:0 auto}
+  .pt-copy{max-width:680px}
+  .pricebars{max-width:680px;margin-left:auto;margin-right:auto}
+  .price-save-callout{max-width:680px;margin-left:auto;margin-right:auto}
+  .cmp-panel{max-width:680px;margin:0 auto}
+  .acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;max-width:860px;margin:0 auto}
+  #delivery .acc-grid, #faq .acc-grid{display:flex;flex-direction:column;gap:0;max-width:680px;margin:0 auto}
   .revlist{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 48px}
   .makers img{height:460px}
   .makers-body{padding:48px}
   .makers h3{font-size:34px}
@@ -780,8 +846,8 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 /* #17 Visual setup steps */
 .setup-visual{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:8px;margin-top:22px;padding:22px 16px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px}
 .sv-step{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:4px}
-.sv-icon{width:54px;height:54px;border-radius:50%;background:var(--surface);border:1.5px solid var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--bronze);flex-shrink:0}
-.sv-num{font-family:var(--ff-d);font-size:11px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
+.sv-icon{position:relative;width:54px;height:54px;border-radius:50%;background:var(--surface);border:1.5px solid var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--bronze);flex-shrink:0}
+.sv-num{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--bronze);color:#fff;font-family:var(--ff-b);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface-2);line-height:1}
 .sv-step-text{display:flex;flex-direction:column;flex:1;width:100%}
 .sv-step h4{font-size:13.5px;color:var(--heading);margin:0 0 4px;line-height:1.2;font-weight:700;min-height:2.4em;display:flex;align-items:center;justify-content:center}
 .sv-step p{font-size:12px;color:var(--ink-3);margin:0;line-height:1.4}
@@ -793,6 +859,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   .sv-step{flex-direction:row;text-align:left;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:14px;margin-bottom:10px}
   .sv-arrow{display:none}
   .sv-step .sv-icon{flex-shrink:0}
+  .sv-num{border-color:var(--surface)}
   .sv-step-text{display:flex;flex-direction:column;gap:2px}
   .sv-step h4{min-height:0;justify-content:flex-start}
 }
@@ -807,34 +874,33 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 .qr-dot{width:5px;height:5px;border-radius:50%;background:rgba(243,237,228,.3);border:none;padding:0;cursor:pointer;transition:background .2s}
 .qr-dot.active{background:var(--tan);width:14px;border-radius:3px}
 
-/* Why Astra auto-slider */
-.why-scrollwrap{position:relative}
-.why-pin{position:absolute;left:0;right:0;top:0;width:100%}
-.why-pin.frozen{position:fixed;left:0;right:0;z-index:5;display:flex;justify-content:center;padding:0 16px}
-.why-pin.frozen .why-pin-inner{width:100%;max-width:1280px}
-.why-pin-inner{width:100%}
-@media(prefers-reduced-motion:reduce){
-  .why-scrollwrap{min-height:0!important}
-}
-.why-slider{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line-2)}
-.why-slides{display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1)}
-.why-slide{flex:0 0 100%;display:grid;grid-template-columns:1fr;background:var(--surface)}
-.why-slide img{width:100%;height:240px;object-fit:cover;display:block}
-.why-slide-body{padding:20px 22px 24px}
-.why-slide-body .eyebrow{display:block;margin-bottom:6px;color:var(--bronze)}
-.why-slide-body h3{font-size:22px;margin-bottom:8px;line-height:1.1}
+/* Why Astra - v5-style swipeable card slider: auto-advances every 4s, manually swipeable, dots optional (not the only way to navigate) */
+.why-slider{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line-2);touch-action:pan-y}
+.why-track{display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.why-slide{flex:0 0 100%;display:flex;flex-direction:column}
+.why-slide-img{width:100%;overflow:hidden;flex-shrink:0}
+.why-slide-img img{width:100%;height:220px;object-fit:cover;display:block}
+.why-slide-body{padding:20px 22px 24px;background:var(--surface)}
+.why-slide-body .eyebrow{display:block;margin-bottom:8px;color:var(--bronze)}
+.why-slide-body h3{font-size:21px;margin-bottom:8px;line-height:1.1}
 .why-slide-body p{font-size:13.5px;color:var(--ink-2);line-height:1.65}
-.why-nav{display:flex;justify-content:center;gap:8px;margin-top:14px}
-.why-dot{width:6px;height:6px;border-radius:50%;background:var(--line);border:none;cursor:pointer;padding:0;transition:background .2s,width .2s}
-.why-dot.active{background:var(--bronze);width:18px;border-radius:3px}
+.why-dots{display:flex;gap:6px;justify-content:center;padding:12px 0 16px;background:var(--surface);border-top:1px solid var(--line-2)}
+.why-dot{width:7px;height:7px;border-radius:50%;background:var(--line-2);border:none;padding:0;cursor:pointer;transition:background .2s,transform .2s}
+.why-dot.active{background:var(--bronze);transform:scale(1.3)}
+@media(prefers-reduced-motion:reduce){
+  .why-track{transition:none}
+}
 @media(min-width:820px){
-  .why-slide{grid-template-columns:1fr 1fr;align-items:center}
-  .why-slide img{height:320px}
-  .why-slide:nth-child(even) img{order:2}
+  .why-slider{border:none;overflow:visible}
+  .why-track{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;transform:none!important}
+  .why-slide{flex:none;flex-direction:column;border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:var(--surface)}
+  .why-slide-img img{height:200px;width:100%}
+  .why-slide-body{flex:1;padding:24px 22px;display:flex;flex-direction:column;justify-content:flex-start}
+  .why-dots{display:none}
 }
 
 /* Dimension strip redesign */
-/* DIMENSION STRIP — clean centered format matching live site */
+/* DIMENSION STRIP - clean centered format matching live site */
 .dim-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:12px;overflow:hidden;margin-bottom:6px}
 .dim-card{background:var(--surface);padding:13px 10px 11px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
 .dim-card-text{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -851,7 +917,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 .btt-ring circle{fill:none;stroke:var(--line-2);stroke-width:2}
 .btt-ring .prog{stroke:var(--bronze);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:138;transition:stroke-dashoffset .1s linear}
 
-/* Price comparison — Paravel-inspired price-first split */
+/* Price comparison - Paravel-inspired price-first split */
 .pcomp-wrap{border:1px solid var(--line-2);border-radius:16px;overflow:hidden;margin-bottom:8px}
 .pcomp-header{display:grid;grid-template-columns:1fr 40px 1fr;gap:0;background:var(--surface)}
 .pcomp-col{padding:24px 18px;display:flex;flex-direction:column;gap:6px}
@@ -883,16 +949,15 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 .pv2-offer .pv2-code{font-family:var(--ff-b);font-weight:700;color:var(--bronze);background:rgba(183,126,69,.12);border:1px solid rgba(183,126,69,.3);padding:3px 9px;border-radius:5px;letter-spacing:.06em;font-size:12.5px}
 .pv2-offer .pv2-copy{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--green);background:none;border:1px solid var(--green);border-radius:5px;padding:4px 10px;cursor:pointer}
 .pv2-offer .pv2-label{font-size:13px;color:var(--ink);font-weight:600}
-.pv2-more{padding:8px 14px;border-bottom:1px solid var(--line-2)}
-.pv2-more details summary{font-size:12px;color:var(--bronze);font-weight:600;cursor:pointer;list-style:none;display:flex;align-items:center;gap:7px}
-.pv2-more details summary::-webkit-details-marker{display:none}
-.pv2-more details[open] summary .pp-chev{transform:rotate(180deg)}
-.pv2-more-item{font-size:12px;color:var(--ink-2);padding:5px 0;border-top:1px solid var(--line-2);margin-top:5px}
+.pv2-more{padding:10px 14px;border-bottom:1px solid var(--line-2)}
+.pv2-more summary{font-size:12px;color:var(--bronze);font-weight:600;cursor:pointer}
+.pv2-more-item{font-size:12px;color:var(--ink-2);padding:5px 14px 5px 0;border-top:1px solid var(--line-2);margin-top:5px}
 .pv2-klarna{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--line-2);font-size:13px;color:var(--ink)}
 .pv2-klarna svg{color:var(--bronze);flex-shrink:0}
 .pv2-klarna b{font-weight:700}
-.pv2-methods{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px 12px;align-items:center}
-.pv2-lock{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-3);padding:0 14px 10px}
+.pv2-methods{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:13px;padding:14px 14px 13px}
+.pm-img{height:11px;width:auto;display:block;object-fit:contain}
+.pv2-lock{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:var(--ink-3);padding:0 14px 12px;text-align:center}
 .pv2-lock svg{flex-shrink:0;color:var(--green)}
 </style>
 </head>
@@ -904,7 +969,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 <!-- ANNOUNCEMENT -->
 <div class="announce" aria-label="Store announcements">
   <div class="announce-track">
-    <div class="announce-item"><span class="tp">★ Trustpilot</span> Rated Excellent by 230+ homes</div>
+    <div class="announce-item"><span class="tp"><img src="./assets-web/trustpilot-logo.png" alt="Trustpilot" class="tp-logo-img"></span> Rated Excellent by 230+ homes</div>
     <div class="announce-item">Extra 10% off with code <code>PRIME10</code></div>
     <div class="announce-item">Summer Sale - £75 off orders over £749</div>
   </div>
@@ -955,17 +1020,46 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 
     <!-- GALLERY: image, then angle tabs, then thumbnail strip -->
     <div class="gallery">
-      <div class="g-main">
+      <div class="g-main" id="gMain">
         <div class="g-badges">
           <span class="badge b-best">One of a Kind</span>
           <span class="badge b-pre b-dyn" id="dynbadge">Pre-Order</span>
         </div>
-        <img id="gimg" src="./assets-web/TRCB00001A-CWWpi4Ek.jpg" alt="Astra Two Door Cabinet styled in a living room">
+        <img id="gimg" src="./assets-web/cabinet-in-living-room.jpg" alt="Astra Two Door Cabinet styled in a living room">
+        <button class="g-expand" id="gExpand" aria-label="View full gallery">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+        </button>
+        <div class="g-loved-strip">
+          <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          Loved by 230+ Homes
+        </div>
       </div>
       <!-- THUMBNAIL STRIP - below hero; image + label (#2, #3, #15) -->
       <div class="thumbstrip">
         <div class="thumbs" id="gthumbs" role="tablist" aria-label="Gallery views"></div>
+        <button class="thumb-more hidden" id="thumbMore" aria-label="More images" onclick="scrollThumbsDown()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          MORE
+        </button>
       </div>
+    </div>
+
+    <!-- FULLSCREEN GALLERY LIGHTBOX -->
+    <div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+      <button class="lb-close" aria-label="Close gallery" onclick="closeLightbox()">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="lb-counter" id="lbCounter">1 / 8</div>
+      <button class="lb-arrow lb-prev" aria-label="Previous image" onclick="lbNav(-1)">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="lb-stage" id="lbStage">
+        <img id="lbImg" src="" alt="">
+      </div>
+      <button class="lb-arrow lb-next" aria-label="Next image" onclick="lbNav(1)">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="lb-thumbs" id="lbThumbs"></div>
     </div>
 
     <!-- PRODUCT INFO -->
@@ -974,10 +1068,8 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
       <div class="rating rating--top">
         <span class="rate-badge"><span class="rs1">★</span> 5.0</span>
         <a href="#reviews" class="r-link">4 reviews</a>
-        <span class="loved">♥ Loved by 230+ homes</span>
         <a href="https://www.trustpilot.com/review/fableroom.com" target="_blank" rel="noopener" class="tp-badge-inline">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="#00b67a"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <b>4.7</b> on Trustpilot
+          <b>4.7</b> on <img src="./assets-web/trustpilot-logo.png" alt="Trustpilot" class="tp-logo-img-inline">
         </a>
       </div>
 
@@ -988,12 +1080,24 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         <div class="swatch"><span class="chip"></span><span class="nm">Rust Galaxy</span></div>
       </div>
 
-      <!-- KEY HIGHLIGHTS (product + quality, with the maker story last) -->
-      <ul class="values">
-        <li><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Hand-applied galaxy patina on solid iron - every cabinet is genuinely one of a kind</li>
-        <li><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Heirloom-grade iron build, with two full-height doors of real, shelved storage</li>
-        <li><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5z"/></svg> Made direct by skilled artisans in India - fair wages, no middleman markup</li>
-      </ul>
+      <!-- KEY HIGHLIGHTS (price/save, product, maker - all low-text) -->
+      <div class="kh-list">
+        <div class="kh-item">
+          <div class="kh-ic"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="kh-text"><b>You save £476</b><span class="sep">&middot;</span><span class="detail">vs other retailers</span></div>
+          <a href="#compare" class="kh-info" aria-label="See price comparison">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          </a>
+        </div>
+        <div class="kh-item">
+          <div class="kh-ic"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5z"/></svg></div>
+          <div class="kh-text"><b>One of a kind</b><span class="sep">&middot;</span><span class="detail">hand-applied patina</span></div>
+        </div>
+        <div class="kh-item">
+          <div class="kh-ic"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/></svg></div>
+          <div class="kh-text"><b>Made direct</b><span class="sep">&middot;</span><span class="detail">no middleman markup</span></div>
+        </div>
+      </div>
 
       <!-- CUSTOMER REVIEW STRIP -->
       <div class="ministrip" aria-label="Customer reviews">
@@ -1035,50 +1139,37 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         See true-to-life scale reference
       </button>
 
-      <!-- PRICE BLOCK + COMPETITOR COMPARISON (#11) -->
+      <!-- PRICE BLOCK (product price only - comparison now lives in Key Highlights + Compare section) -->
       <div class="price">
         <span class="p-now">£503</span>
         <span class="p-was">£899</span>
         <span class="p-save">Save 44%</span>
       </div>
-      <div class="comp-row">
-        <span>Other retailers</span>
-        <span class="comp-retail">£979+</span>
-        <span class="comp-save">You save £476 vs high street</span>
-      </div>
-      <button class="price-info-btn" onclick="openPriceModal()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        How this is priced
-      </button>
 
       <!-- PAYMENT + OFFERS ABOVE CTA (#12) -->
       <div class="paypanel-v2">
         <div class="pv2-offer">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-          <span class="pv2-label">Extra 10% off — use code</span>
+          <span class="pv2-label">Extra 10% off - use code</span>
           <span class="pv2-code">PRIME10</span>
           <button class="pv2-copy" onclick="copyCode(this)">Copy</button>
         </div>
         <details class="pv2-more">
-          <summary>
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-            2 more active offers
-            <span class="pp-chev">▾</span>
-          </summary>
-          <div class="pv2-more-item">£50 off orders over £599 &mdash; <strong>auto-applied</strong></div>
-          <div class="pv2-more-item">£75 off orders over £749 &mdash; <strong>auto-applied</strong></div>
+          <summary>2 more active offers</summary>
+          <div class="pv2-more-item">£50 off orders over £599 - <strong>auto-applied</strong></div>
+          <div class="pv2-more-item">£75 off orders over £749 - <strong>auto-applied</strong></div>
         </details>
         <div class="pv2-klarna">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-          <span>Pay in 3 &mdash; <b>£167.67/mo</b> interest-free BNPL</span>
+          <span>Pay in 3 - <b>£167.67/mo</b> interest-free BNPL</span>
         </div>
         <div class="pv2-methods">
-          <span class="pm-logo pm-shop">Shop Pay</span>
-          <span class="pm-logo pm-klarna">Klarna</span>
-          <span class="pm-logo pm-apple"> Pay</span>
-          <span class="pm-logo pm-gpay">G Pay</span>
-          <span class="pm-logo">VISA</span>
-          <span class="pm-logo">MC</span>
+          <img class="pm-img" src="./assets-web/pay-visa.png" alt="Visa">
+          <img class="pm-img" src="./assets-web/pay-mastercard.png" alt="Mastercard">
+          <img class="pm-img" src="./assets-web/pay-shoppay.png" alt="Shop Pay">
+          <img class="pm-img" src="./assets-web/pay-klarna.png" alt="Klarna">
+          <img class="pm-img" src="./assets-web/pay-gpay.png" alt="Google Pay">
+          <img class="pm-img" src="./assets-web/pay-paypal.png" alt="PayPal">
         </div>
         <div class="pv2-lock">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -1173,28 +1264,12 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
     <button class="tm-close" onclick="closeTrust('bnpl')">×</button>
     <svg class="tm-icon" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
     <h4>0% Interest Instalments</h4>
-    <p>Split the £503 into 3 equal payments of <b>£167.67</b>, at 0% interest. Choose your preferred provider at checkout — no fees, no hidden costs.</p>
+    <p>Split the £503 into 3 equal payments of <b>£167.67</b>, at 0% interest. Choose your preferred provider at checkout - no fees, no hidden costs.</p>
     <p>We accept Klarna, Shop Pay instalments, Apple Pay, Google Pay, PayPal and all major cards.</p>
   </div>
 </div>
 
 <!-- PRICE BREAKDOWN MODAL (#19) -->
-<div class="price-modal" id="priceModal" onclick="if(event.target===this)closePriceModal()">
-  <div class="pm-card">
-    <div class="pm-drag"></div>
-    <button class="pm-close" onclick="closePriceModal()">×</button>
-    <h4>How your £503 is priced</h4>
-    <div class="pm-row"><span>Materials</span><b>£76.05</b></div>
-    <div class="pm-row"><span>Crafting &amp; labour</span><b>£86.92</b></div>
-    <div class="pm-row"><span>Packaging</span><b>£18.11</b></div>
-    <div class="pm-row"><span>Freight &amp; handling</span><b>£79.68</b></div>
-    <div class="pm-row"><span>Card fees</span><b>£10.86</b></div>
-    <div class="pm-row"><span>Duties &amp; taxes</span><b>£90.54</b></div>
-    <div class="pm-total"><span>Our total cost</span><span>£362.16</span></div>
-    <p class="pm-note">The same piece retails near <b>£979+</b> elsewhere. By selling direct - no importers, no showrooms - we pass 44% back to you while paying our makers fairly.</p>
-  </div>
-</div>
-
 
 <!-- STICKY SECTION NAV -->
 <nav class="secnav" id="secnav" aria-label="Sections">
@@ -1224,10 +1299,10 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         <div class="parallax-scene" aria-label="Layered views of the Astra galaxy finish">
           <span class="px-disk px-disk--one" data-depth="-0.08"></span>
           <span class="px-disk px-disk--two" data-depth="0.14"></span>
-          <figure class="px-card px-card--left" data-depth="0.18" data-rotate="-4"><img src="./assets-web/TRCB00001A_2-BDhAzuVJ.jpg" alt="Astra cabinet front, galaxy finish"></figure>
-          <figure class="px-card px-card--hero" data-depth="-0.12" data-rotate="2"><img src="./assets-web/TRBS00001A_20_2-BrsUvFRX.jpg" alt="Macro of the hand-applied galaxy patina"></figure>
-          <figure class="px-card px-card--right" data-depth="0.28" data-rotate="6"><img src="./assets-web/TRBS00001A_20_3-BeRiV4vl.jpg" alt="Detail of the rust galaxy finish"></figure>
-          <div class="px-label" data-depth="-0.2">Light moves across the patina before the room does.<small>Scroll to reveal</small></div>
+          <figure class="px-card px-card--left" data-depth="0.1" data-rotate="-3"><img src="./assets-web/cabinet-in-living-room.jpg" alt="Astra cabinet styled in a living room"></figure>
+          <figure class="px-card px-card--hero" data-depth="-0.12" data-rotate="2"><img src="./assets-web/cabinet-patina-closeup.jpg" alt="Macro of the hand-applied galaxy patina"></figure>
+          <figure class="px-card px-card--right" data-depth="0.18" data-rotate="3"><img src="./assets-web/cabinet-three-quarter-view.jpg" alt="Three-quarter view of the Astra cabinet"></figure>
+          <div class="px-label" data-depth="-0.2">Light moves across the patina before the room does.</div>
         </div>
       </div>
     </div>
@@ -1237,43 +1312,41 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 
   <!-- A+ · WHY (premium benefit icon grid - grounded in the site's key features) -->
   <section id="why" class="ap">
-    <div class="why-scrollwrap" id="whyScrollwrap">
-      <div class="why-pin" id="whyPin">
-        <div class="why-pin-inner">
-        <div class="ap-head">
-          <span class="eyebrow">Why the Astra</span>
-          <h2 class="ap-h">Three things that make it worth it</h2>
-        </div>
-        <div class="why-slider" id="whySlider">
-          <div class="why-slides" id="whySlides">
-            <div class="why-slide">
-              <img src="./assets-web/TRBS00001A_20_2-BrsUvFRX.jpg" alt="Galaxy patina macro detail">
-              <div class="why-slide-body">
-                <span class="eyebrow">The Patina</span>
-                <h3>Every piece carries its own character</h3>
-                <p>Mineral oxide and heat, applied layer by layer in our workshop. The variation isn&#8217;t a flaw - it&#8217;s the whole point. Your piece will never be replicated.</p>
-              </div>
-            </div>
-            <div class="why-slide">
-              <img src="./assets-web/TRBS00001A_20_4-BfM2wrxo.jpg" alt="Cabinet interior shelving">
-              <div class="why-slide-body">
-                <span class="eyebrow">The Build</span>
-                <h3>Built to last a lifetime</h3>
-                <p>Solid iron construction, not pressed board or hollow metal. 42 kg of weight that tells you exactly what it is - something made to stay.</p>
-              </div>
-            </div>
-            <div class="why-slide">
-              <img src="./assets-web/TRCB00001A-CWWpi4Ek.jpg" alt="Astra in a real living room">
-              <div class="why-slide-body">
-                <span class="eyebrow">The Story</span>
-                <h3>Direct from maker to you</h3>
-                <p>Made by skilled artisans in India, paid fairly, sold without a showroom in the way. That&#8217;s how &#163;979 becomes &#163;503.</p>
-              </div>
-            </div>
+    <div class="ap-head">
+      <span class="eyebrow">Why the Astra</span>
+      <h2 class="ap-h">Three things that make it worth it</h2>
+    </div>
+    <div class="why-slider" id="whySlider">
+      <div class="why-track" id="whyTrack">
+        <div class="why-slide">
+          <div class="why-slide-img"><img src="./assets-web/cabinet-patina-closeup.jpg" alt="Galaxy patina macro detail"></div>
+          <div class="why-slide-body">
+            <span class="eyebrow">The Patina</span>
+            <h3>Every piece carries its own character</h3>
+            <p>Mineral oxide and heat, applied layer by layer in our workshop. The variation isn&#8217;t a flaw - it&#8217;s the whole point. Your piece will never be replicated.</p>
           </div>
         </div>
-        <div class="why-nav" id="whyNav"></div>
+        <div class="why-slide">
+          <div class="why-slide-img"><img src="./assets-web/cabinet-interior-shelving.jpg" alt="Cabinet interior shelving"></div>
+          <div class="why-slide-body">
+            <span class="eyebrow">The Build</span>
+            <h3>Built to last a lifetime</h3>
+            <p>Solid iron construction, not pressed board or hollow metal. 42 kg of weight that tells you exactly what it is - something made to stay.</p>
+          </div>
         </div>
+        <div class="why-slide">
+          <div class="why-slide-img"><img src="./assets-web/cabinet-in-living-room.jpg" alt="Astra in a real living room"></div>
+          <div class="why-slide-body">
+            <span class="eyebrow">The Story</span>
+            <h3>Direct from maker to you</h3>
+            <p>Made by skilled artisans in India, paid fairly, sold without a showroom in the way. That&#8217;s how &#163;979 becomes &#163;503.</p>
+          </div>
+        </div>
+      </div>
+      <div class="why-dots" id="whyDots">
+        <button class="why-dot active" onclick="goWhy(0)" aria-label="Slide 1"></button>
+        <button class="why-dot" onclick="goWhy(1)" aria-label="Slide 2"></button>
+        <button class="why-dot" onclick="goWhy(2)" aria-label="Slide 3"></button>
       </div>
     </div>
   </section>
@@ -1284,7 +1357,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   <section class="ap">
     <div class="ap-head"><span class="eyebrow">In your room</span><h2 class="ap-h">Loved in real homes</h2></div>
     <div class="quoteblock">
-      <img src="./assets-web/TRCB00001A-CWWpi4Ek.jpg" alt="Astra Two Door Cabinet styled in a living room">
+      <img src="./assets-web/cabinet-in-living-room.jpg" alt="Astra Two Door Cabinet styled in a living room">
       <div class="qcard">
         <span class="qm">&ldquo;</span>
         <div class="qcard-reviews" id="qcardReviews">
@@ -1303,7 +1376,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   <!-- A+ 3 · STORAGE (image + text split with callouts) -->
   <section id="storage" class="ap">
     <div class="ap-split">
-      <div class="media"><img src="./assets-web/TRBS00001A_20_4-BfM2wrxo.jpg" alt="Cabinet doors open, revealing interior shelving"></div>
+      <div class="media"><img src="./assets-web/cabinet-interior-shelving.jpg" alt="Cabinet doors open, revealing interior shelving"></div>
       <div class="copy">
         <span class="eyebrow">Built to be lived with</span>
         <h3>Beautiful outside, practical within</h3>
@@ -1327,8 +1400,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
     </div>
     <div class="setup-visual">
       <div class="sv-step">
-        <div class="sv-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
-        <span class="sv-num">Step 1</span>
+        <div class="sv-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span class="sv-num">1</span></div>
         <div class="sv-step-text">
           <h4>Unbox</h4>
           <p>Two people, five minutes. Cabinet arrives fully built.</p>
@@ -1336,8 +1408,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
       </div>
       <div class="sv-arrow">&#8594;</div>
       <div class="sv-step">
-        <div class="sv-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-        <span class="sv-num">Step 2</span>
+        <div class="sv-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span class="sv-num">2</span></div>
         <div class="sv-step-text">
           <h4>Attach legs</h4>
           <p>Allen key included. Four bolts, hand-tight.</p>
@@ -1345,8 +1416,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
       </div>
       <div class="sv-arrow">&#8594;</div>
       <div class="sv-step">
-        <div class="sv-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
-        <span class="sv-num">Step 3</span>
+        <div class="sv-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg><span class="sv-num">3</span></div>
         <div class="sv-step-text">
           <h4>Place &amp; style</h4>
           <p>Open the doors. It&#8217;s ready to live with.</p>
@@ -1370,11 +1440,11 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
     </div>
     <div class="fbt">
       <div class="fbt-items">
-        <label class="fbt-item"><input type="checkbox" checked onchange="fbtCalc()" data-price="503"><img src="./assets-web/TRCB00001A-CWWpi4Ek.jpg" alt="Astra Two Door Cabinet"><span class="fbt-n">Astra Two Door Cabinet <em>(this item)</em></span><span class="fbt-p">£503</span></label>
+        <label class="fbt-item"><input type="checkbox" checked onchange="fbtCalc()" data-price="503"><img src="./assets-web/cabinet-in-living-room.jpg" alt="Astra Two Door Cabinet"><span class="fbt-n">Astra Two Door Cabinet <em>(this item)</em></span><span class="fbt-p">£503</span></label>
         <span class="fbt-plus">+</span>
-        <label class="fbt-item"><input type="checkbox" checked onchange="fbtCalc()" data-price="389"><img src="./assets-web/TRBS00001A_20_3-BeRiV4vl.jpg" alt="Astra Console Table"><span class="fbt-n">Astra Console Table</span><span class="fbt-p">£389</span></label>
+        <label class="fbt-item"><input type="checkbox" checked onchange="fbtCalc()" data-price="389"><img src="./assets-web/cabinet-three-quarter-view.jpg" alt="Astra Console Table"><span class="fbt-n">Astra Console Table</span><span class="fbt-p">£389</span></label>
         <span class="fbt-plus">+</span>
-        <label class="fbt-item"><input type="checkbox" checked onchange="fbtCalc()" data-price="215"><img src="./assets-web/TRBS00001A_20_5-CdENtjvC.jpg" alt="Astra Side Table"><span class="fbt-n">Astra Side Table</span><span class="fbt-p">£215</span></label>
+        <label class="fbt-item"><input type="checkbox" checked onchange="fbtCalc()" data-price="215"><img src="./assets-web/cabinet-top-corner-closeup.jpg" alt="Astra Side Table"><span class="fbt-n">Astra Side Table</span><span class="fbt-p">£215</span></label>
       </div>
       <div class="fbt-buy">
         <div class="fbt-total">Total: <b id="fbtTotal">£1,107</b><span class="fbt-save" id="fbtSave">Save £120 as a set</span></div>
@@ -1388,32 +1458,35 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   <section id="compare" class="ap">
     <div class="ap-head">
       <span class="eyebrow">Value</span>
-      <h2 class="ap-h">Why £503 is the honest price</h2>
+      <h2 class="ap-h">Priced with honesty</h2>
+      <p class="ap-sub">Prices that make sense, without the middlemen.</p>
     </div>
     <div class="cmp-tabs">
       <button class="cmp-tab active" onclick="switchCmpTab(this,'ctab-pricing')">How is this priced?</button>
       <button class="cmp-tab" onclick="switchCmpTab(this,'ctab-compare')">How it compares</button>
     </div>
     <div class="cmp-panel" id="ctab-compare">
+      <p class="cmp-intro">Our pricing benchmarks ensure great savings on Fableroom vs traditional retail. While we compare the closest products in terms of design, size, and materials, some variations may exist, and competitor pricing is also subject to change.</p>
       <div class="cmpwrap">
-      <table class="cmptable">
-        <thead><tr><th></th><th class="astra">Astra</th><th>Retail alternatives</th><th>Flat-pack</th></tr></thead>
+      <table class="cmptable2">
+        <thead><tr><th></th><th class="astra">Fableroom</th><th>John Lewis</th></tr></thead>
         <tbody>
-          <tr><td>Solid iron build</td><td class="astra y">✓</td><td class="n">Sometimes</td><td class="n">✕</td></tr>
-          <tr><td>Hand-applied finish</td><td class="astra y">✓</td><td class="n">✕</td><td class="n">✕</td></tr>
-          <tr><td>One-of-a-kind patina</td><td class="astra y">✓</td><td class="n">✕</td><td class="n">✕</td></tr>
-          <tr><td>Ethically sourced</td><td class="astra y">✓</td><td class="n">Varies</td><td class="n">✕</td></tr>
-          <tr><td>Direct-maker pricing</td><td class="astra y">✓</td><td class="n">✕</td><td class="n">Sometimes</td></tr>
-          <tr><td>365-day guarantee</td><td class="astra y">✓</td><td class="n">Varies</td><td class="n">✕</td></tr>
+          <tr><td>Price</td><td class="astra"><b>£503</b></td><td>£899</td></tr>
+          <tr><td>Savings (%)</td><td class="astra"><span class="cmp-dot"></span></td><td>44%</td></tr>
+          <tr><td>Direct-to-you</td><td class="astra"><span class="cmp-dot"></span></td><td class="n">✕</td></tr>
+          <tr><td>365-day quality guarantee</td><td class="astra"><span class="cmp-dot"></span></td><td class="n">✕</td></tr>
         </tbody>
       </table>
     </div>
     </div>
     <div class="cmp-panel active" id="ctab-pricing">
       <div class="pricebars">
-        <div class="pbar"><div class="pl"><span>Our total cost to make it</span><b>£362</b></div><div class="track"><div class="fill" style="width:40%;background:var(--ink-3)"></div></div></div>
-        <div class="pbar"><div class="pl"><span>Your price - direct from maker</span><b>£503</b></div><div class="track"><div class="fill" style="width:56%;background:var(--bronze)"></div></div></div>
-        <div class="pbar"><div class="pl"><span>High-street equivalent</span><b>£979+</b></div><div class="track"><div class="fill" style="width:100%;background:var(--line)"></div></div></div>
+        <div class="pbar"><div class="pl"><span>Our Price, direct from makers</span><b>£503</b></div><div class="track"><div class="fill" style="width:51%;background:var(--bronze)"></div></div></div>
+        <div class="pbar"><div class="pl"><span>Competitor Price</span><b>£979+</b></div><div class="track"><div class="fill" style="width:100%;background:var(--line)"></div></div></div>
+      </div>
+      <div class="price-save-callout">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>You save <b>£476</b> - that&rsquo;s <b>44% less</b> than buying the same piece elsewhere</span>
       </div>
       <div class="pt">
         <div class="costcard">
@@ -1425,7 +1498,6 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
           <div class="cr"><span class="l">Card fees</span><span class="a">£10.86</span></div>
           <div class="cr"><span class="l">Duties &amp; taxes</span><span class="a">£90.54</span></div>
           <div class="ct"><span>Our total cost</span><span>£362.00</span></div>
-          <div class="ptnote">The same piece retails near <b>£979+</b> elsewhere. Direct-from-maker pricing saves you 44%.</div>
         </div>
         <div class="pt-copy">
           <p>We work directly with the makers and ship straight to your door - no importers, no distributors, no showroom markup.</p>
@@ -1450,7 +1522,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
     </div>
     <div class="makers-journey" id="makersJourney">
       <div class="mj-step">
-        <img src="./assets-web/TRBS00001A_20_5-CdENtjvC.jpg" alt="Iron workshop detail">
+        <img src="./assets-web/cabinet-top-corner-closeup.jpg" alt="Iron workshop detail">
         <div class="mj-body">
           <div class="mj-num">01</div>
           <h4>The workshop, India</h4>
@@ -1458,7 +1530,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         </div>
       </div>
       <div class="mj-step">
-        <img src="./assets-web/TRBS00001A_20_2-BrsUvFRX.jpg" alt="Patina applied by hand">
+        <img src="./assets-web/cabinet-patina-closeup.jpg" alt="Patina applied by hand">
         <div class="mj-body">
           <div class="mj-num">02</div>
           <h4>Patina applied by hand</h4>
@@ -1466,7 +1538,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         </div>
       </div>
       <div class="mj-step">
-        <img src="./assets-web/TRBS00001A_20_1-CnTxCMhe.jpg" alt="Cabinet quality checked">
+        <img src="./assets-web/cabinet-front-view.jpg" alt="Cabinet quality checked">
         <div class="mj-body">
           <div class="mj-num">03</div>
           <h4>Quality checked</h4>
@@ -1474,7 +1546,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         </div>
       </div>
       <div class="mj-step">
-        <img src="./assets-web/TRCB00001A-CWWpi4Ek.jpg" alt="Arrives in your home">
+        <img src="./assets-web/cabinet-in-living-room.jpg" alt="Arrives in your home">
         <div class="mj-body">
           <div class="mj-num">04</div>
           <h4>Arrives at your door</h4>
@@ -1582,8 +1654,14 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
         <div class="revsum-score-row">
           <span class="revsum-score">5.0</span>
           <div class="revsum-score-meta">
-            <span class="rs">★★★★★</span>
-            <span>Based on 4 reviews</span>
+            <span class="tp-stars-row">
+              <span class="tp-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+              <span class="tp-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+              <span class="tp-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+              <span class="tp-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+              <span class="tp-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+            </span>
+            <span class="rb-sub">Based on 4 reviews</span>
           </div>
         </div>
         <div class="revsum-bars">
@@ -1608,13 +1686,13 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
             <span class="revsum-tp-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
             <span class="revsum-tp-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
             <span class="revsum-tp-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-            <span class="revsum-tp-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+            <span class="revsum-tp-star" style="background:linear-gradient(90deg,#00b67a 70%,var(--line-2) 70%)"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
           </span>
           <span class="revsum-tp-body">
-            <span class="tp-title">Trustpilot</span>
-            <span class="tp-sub">Rated 5.0 by 230+ homes</span>
+            <span class="tp-title"><img src="./assets-web/trustpilot-logo.png" alt="Trustpilot" class="tp-logo-img-title"></span>
+            <span class="tp-sub">Rated 4.7 by ~1000 people</span>
           </span>
-          <span class="revsum-tp-cta">★ Trustpilot</span>
+          <span class="revsum-tp-cta"><img src="./assets-web/trustpilot-logo.png" alt="Trustpilot" class="tp-logo-img-cta"></span>
         </a>
       </div>
     </div>
@@ -1628,7 +1706,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
             <div class="revcard2-name">Sarah M.</div>
             <div class="revcard2-time">2 weeks ago · Verified buyer</div>
           </div>
-          <div class="revcard2-score"><span class="rs">★★★★★</span> 5.0</div>
+          <div class="revcard2-stars"><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span></div>
         </div>
         <p>The finish is even more stunning in person. Photos really don't do it justice.</p>
       </div>
@@ -1639,7 +1717,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
             <div class="revcard2-name">James K.</div>
             <div class="revcard2-time">3 weeks ago · Verified buyer</div>
           </div>
-          <div class="revcard2-score"><span class="rs">★★★★★</span> 5.0</div>
+          <div class="revcard2-stars"><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span></div>
         </div>
         <p>Solid quality. Feels genuinely premium. Worth every penny.</p>
       </div>
@@ -1650,7 +1728,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
             <div class="revcard2-name">Priya R.</div>
             <div class="revcard2-time">1 month ago · Verified buyer</div>
           </div>
-          <div class="revcard2-score"><span class="rs">★★★★★</span> 5.0</div>
+          <div class="revcard2-stars"><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span></div>
         </div>
         <p>Arrived well-packaged. Assembly was straightforward with two people.</p>
       </div>
@@ -1661,7 +1739,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
             <div class="revcard2-name">David L.</div>
             <div class="revcard2-time">1 month ago · Verified buyer</div>
           </div>
-          <div class="revcard2-score"><span class="rs">★★★★★</span> 5.0</div>
+          <div class="revcard2-stars"><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="rc-star-tile"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span></div>
         </div>
         <p>Love the depth of the patina - no two are the same.</p>
       </div>
@@ -1675,10 +1753,10 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
   <section class="ap">
     <div class="ap-head"><span class="eyebrow">Complete the look</span><h2 class="ap-h">Pairs beautifully with</h2></div>
     <div class="rail">
-      <a class="railcard" href="#"><img class="ri" src="./assets-web/TRBS00001A_20_3-BeRiV4vl.jpg" alt=""><div class="rn">Astra Console Table</div><div class="rp">£389</div></a>
-      <a class="railcard" href="#"><img class="ri" src="./assets-web/TRBS00001A_20_5-CdENtjvC.jpg" alt=""><div class="rn">Astra Side Table</div><div class="rp">£215</div></a>
-      <a class="railcard" href="#"><img class="ri" src="./assets-web/TRBS00001A_20_1-CnTxCMhe.jpg" alt=""><div class="rn">Alder Two Door Cabinet</div><div class="rp">£472</div></a>
-      <a class="railcard" href="#"><img class="ri" src="./assets-web/TRCB00001A_2-BDhAzuVJ.jpg" alt=""><div class="rn">Cayman Wooden Cabinet</div><div class="rp">£540</div></a>
+      <a class="railcard" href="#"><img class="ri" src="./assets-web/cabinet-three-quarter-view.jpg" alt=""><div class="rn">Astra Console Table</div><div class="rp">£389</div></a>
+      <a class="railcard" href="#"><img class="ri" src="./assets-web/cabinet-top-corner-closeup.jpg" alt=""><div class="rn">Astra Side Table</div><div class="rp">£215</div></a>
+      <a class="railcard" href="#"><img class="ri" src="./assets-web/cabinet-front-view.jpg" alt=""><div class="rn">Alder Two Door Cabinet</div><div class="rp">£472</div></a>
+      <a class="railcard" href="#"><img class="ri" src="./assets-web/cabinet-angled-detail.jpg" alt=""><div class="rn">Cayman Wooden Cabinet</div><div class="rp">£540</div></a>
     </div>
   </section>
 </div>
@@ -1705,10 +1783,10 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 <!-- STICKY BUY BAR (v5 exact) -->
 <div class="stickybar" id="stickybar">
   <div class="sb-in">
-    <img class="sb-thumb" src="./assets-web/TRBS00001A_20_1-CnTxCMhe.jpg" alt="">
+    <img class="sb-thumb" src="./assets-web/cabinet-front-view.jpg" alt="">
     <div class="sb-info">
       <div class="sb-name">Astra Two Door Cabinet</div>
-      <div class="sb-price">£503 <s>£899</s></div>
+      <div class="sb-price">£503 <s>£899</s> <span class="sb-save">-44%</span></div>
     </div>
     <button class="sb-btn">Add to Basket</button>
   </div>
@@ -1725,7 +1803,7 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 <div class="exit" id="exit">
   <div class="exit-card">
     <button class="exit-x" onclick="closeExit()" aria-label="Close">×</button>
-    <img src="./assets-web/TRBS00001A_20_2-BrsUvFRX.jpg" alt="">
+    <img src="./assets-web/cabinet-patina-closeup.jpg" alt="">
     <div class="exit-body">
       <span class="eyebrow">Before you go</span>
       <h3>Take an extra 10% off</h3>
@@ -1749,14 +1827,67 @@ footer{background:var(--ink-3);color:rgba(255,255,255,.78)}
 
 var IMGDIR="./assets-web/";
 var imgs=[
- {f:"TRCB00001A-CWWpi4Ek.jpg",a:"Styled in a living room",label:"In Your Room"},
- {f:"TRCB00001A_2-BDhAzuVJ.jpg",a:"Dimensions with scale reference",label:"Dimensions"},
- {f:"TRBS00001A_20_1-CnTxCMhe.jpg",a:"Front view",label:"Front"},
- {f:"TRBS00001A_20_2-BrsUvFRX.jpg",a:"Galaxy patina close-up",label:"Patina Detail"},
- {f:"TRBS00001A_20_3-BeRiV4vl.jpg",a:"Three-quarter view",label:"Three-quarter"},
- {f:"TRBS00001A_20_4-BfM2wrxo.jpg",a:"Doors open, interior shelving",label:"Interior"},
- {f:"TRBS00001A_20_5-CdENtjvC.jpg",a:"Top corner close-up",label:"Top Corner"}
+ {f:"cabinet-in-living-room.jpg",  a:"Styled in a living room",label:"In Your Room",   bg:false},
+ {f:"cabinet-dimensions-scale.jpg",a:"Dimensions with human-scale reference",label:"Dimensions",   bg:true},
+ {f:"cabinet-front-view.jpg",      a:"Front view",label:"Front",          bg:true},
+ {f:"cabinet-patina-closeup.jpg",  a:"Galaxy patina close-up",label:"Patina Detail",   bg:true},
+ {f:"cabinet-review-trust-v3.jpg", a:"Customer review and our promise: best price guaranteed, 365-day guarantee, ethically handcrafted, one of a kind",label:"Reviews",bg:false},
+ {f:"cabinet-three-quarter-view.jpg",a:"Three-quarter view",label:"Three-quarter",     bg:true},
+ {f:"cabinet-interior-shelving.jpg",a:"Doors open, interior shelving",label:"Interior",bg:true},
+ {f:"cabinet-top-corner-closeup.jpg",a:"Top corner close-up",label:"Top Corner",       bg:true}
 ];
+
+/* ── Canvas background swap ─────────────────────────────────────────────────
+   Replaces the beige studio background with light grey (#EFEFEF) on product
+   shots only (bg:true). Lifestyle and review composite slides are skipped.
+   Works entirely client-side — no pre-processing needed.
+   bgCache stores the processed data-URL keyed by filename so each image is
+   only processed once, even when switching back to a slide.
+──────────────────────────────────────────────────────────────────────────── */
+var bgCache={};
+var BG_GREY=[239,239,239];   /* target colour #EFEFEF — change here if needed */
+var BG_TOLERANCE=0.13;       /* 0–1; raise if edges look patchy, lower if product colour bleeds */
+
+function swapBg(srcUrl, callback){
+  if(bgCache[srcUrl]){callback(bgCache[srcUrl]);return;}
+  var tmpImg=new Image();
+  tmpImg.crossOrigin='anonymous';
+  tmpImg.onload=function(){
+    var c=document.createElement('canvas');
+    c.width=tmpImg.naturalWidth; c.height=tmpImg.naturalHeight;
+    var ctx=c.getContext('2d');
+    ctx.drawImage(tmpImg,0,0);
+    var d=ctx.getImageData(0,0,c.width,c.height);
+    var px=d.data, w=c.width, h=c.height;
+    /* detect bg from 4 corners */
+    var margin=Math.min(80,Math.floor(h/10),Math.floor(w/10));
+    var rSum=0,gSum=0,bSum=0,n=0;
+    for(var cy=0;cy<margin;cy++){
+      for(var cx=0;cx<margin;cx++){
+        var corners=[[cx,cy],[w-1-cx,cy],[cx,h-1-cy],[w-1-cx,h-1-cy]];
+        corners.forEach(function(pt){
+          var idx=(pt[1]*w+pt[0])*4;
+          rSum+=px[idx];gSum+=px[idx+1];bSum+=px[idx+2];n++;
+        });
+      }
+    }
+    var bgR=rSum/n, bgG=gSum/n, bgB=bSum/n;
+    /* replace pixels within tolerance */
+    var tol=BG_TOLERANCE*255;
+    for(var p=0;p<px.length;p+=4){
+      if(Math.abs(px[p]-bgR)<tol && Math.abs(px[p+1]-bgG)<tol && Math.abs(px[p+2]-bgB)<tol){
+        px[p]=BG_GREY[0]; px[p+1]=BG_GREY[1]; px[p+2]=BG_GREY[2];
+      }
+    }
+    ctx.putImageData(d,0,0);
+    var dataUrl=c.toDataURL('image/jpeg',0.93);
+    bgCache[srcUrl]=dataUrl;
+    callback(dataUrl);
+  };
+  tmpImg.onerror=function(){callback(srcUrl);};/* fallback: use original */
+  tmpImg.src=srcUrl;
+}
+
 var gi=0,gimg=document.getElementById('gimg'),gthumbs=document.getElementById('gthumbs');
 imgs.forEach(function(o,i){
   var t=document.createElement('button');
@@ -1764,18 +1895,41 @@ imgs.forEach(function(o,i){
   t.setAttribute('role','tab');
   t.setAttribute('aria-label',o.a);
   t.setAttribute('aria-selected',i===0?'true':'false');
-  t.innerHTML='<div class="th-img"><img src="'+IMGDIR+o.f+'" alt="" loading="lazy"></div><span class="th-lbl">'+o.label+'</span>';
+  /* build thumb — apply bg swap to product shots */
+  var thumbImgEl=document.createElement('img');
+  thumbImgEl.alt=''; thumbImgEl.loading='lazy';
+  var rawSrc=IMGDIR+o.f;
+  if(o.bg){
+    swapBg(rawSrc,function(processed){thumbImgEl.src=processed;});
+  } else {
+    thumbImgEl.src=rawSrc;
+  }
+  var thDiv=document.createElement('div'); thDiv.className='th-img';
+  thDiv.appendChild(thumbImgEl);
+  var lbl=document.createElement('span'); lbl.className='th-lbl'; lbl.textContent=o.label;
+  t.appendChild(thDiv); t.appendChild(lbl);
   t.onclick=function(){show(i)};
   gthumbs.appendChild(t);
 });
 function show(i, scrollToGallery){
   gi=i;
-  /* reset Ken Burns (#4) */
+  /* reset Ken Burns */
   gimg.style.animation='none';
-  gimg.src=IMGDIR+imgs[i].f;
   gimg.alt=imgs[i].a;
   gimg.getBoundingClientRect();
   gimg.style.animation='';
+  /* bg swap on product shots; skip lifestyle (0) and reviews (4) */
+  var rawSrc=IMGDIR+imgs[i].f;
+  if(imgs[i].bg){
+    swapBg(rawSrc,function(processed){
+      gimg.style.animation='none';
+      gimg.src=processed;
+      gimg.getBoundingClientRect();
+      gimg.style.animation='';
+    });
+  } else {
+    gimg.src=rawSrc;
+  }
   document.querySelectorAll('.thumb').forEach(function(d,k){
     var on=k===i;
     d.classList.toggle('active',on);
@@ -1783,7 +1937,11 @@ function show(i, scrollToGallery){
   });
   var gb=document.querySelector('.g-badges');
   if(gb){gb.classList.toggle('dim',i!==0)}
-  /* scroll active thumb into view — works for both left and right directions */
+  var lovedStrip=document.querySelector('.g-loved-strip');
+  if(lovedStrip){lovedStrip.style.display=(i===1||i===4)?'none':'flex'}
+  var subtleSlides=[1,4];
+  gimg.style.animationName=subtleSlides.indexOf(i)>-1?'kb-subtle':'kb';
+  /* scroll active thumb into view - works for both left and right directions */
   var atv=gthumbs.querySelectorAll('.thumb')[i];
   if(atv){atv.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'})}
   /* if requested (e.g. triggered from below the fold), bring the main gallery image into view too */
@@ -1794,18 +1952,190 @@ function show(i, scrollToGallery){
       window.scrollTo({top:top,behavior:'smooth'});
     }
   }
+  /* keep lightbox in sync if it happens to be open */
+  if(typeof lbSyncIfOpen==='function')lbSyncIfOpen();
+  /* desktop: scroll the vertical thumbstrip so active thumb is visible */
+  if(window.innerWidth>=820){
+    var tc=document.getElementById('gthumbs');
+    var atd=tc?tc.querySelectorAll('.thumb')[i]:null;
+    if(tc&&atd){
+      var thumbH=84+7; /* thumb height + gap */
+      var targetScroll=i*thumbH;
+      tc.scrollTo({top:targetScroll,behavior:'smooth'});
+    }
+    updateThumbMore();
+  }
 }
 
+function updateThumbMore(){
+  if(window.innerWidth<820)return;
+  var tc=document.getElementById('gthumbs');
+  var btn=document.getElementById('thumbMore');
+  if(!tc||!btn)return;
+  var total=tc.querySelectorAll('.thumb').length;
+  var visible=7;
+  var scrolledTo=Math.round(tc.scrollTop/(84+7));
+  var lastVisible=scrolledTo+visible;
+  if(total>visible&&lastVisible<total){
+    btn.classList.remove('hidden');
+  } else {
+    btn.classList.add('hidden');
+  }
+}
+function scrollThumbsDown(){
+  var tc=document.getElementById('gthumbs');
+  if(!tc)return;
+  tc.scrollBy({top:(84+7)*2,behavior:'smooth'});
+  setTimeout(updateThumbMore,400);
+}
+/* init thumb-more on desktop after thumbs are built */
+(function initThumbMore(){
+  if(window.innerWidth<820)return;
+  var tc=document.getElementById('gthumbs');
+  if(!tc){setTimeout(initThumbMore,100);return;}
+  /* switch to scrollable so JS can scroll it */
+  tc.style.overflowY='hidden';
+  tc.addEventListener('scroll',updateThumbMore);
+  setTimeout(updateThumbMore,200);
+})();
+
+/* ── Main gallery image: swipe left/right to change image, tap to open lightbox ── */
+(function(){
+  var gMain=document.getElementById('gMain');
+  var expandBtn=document.getElementById('gExpand');
+  if(!gMain)return;
+  var sx=0,sy=0,moved=false;
+  gMain.addEventListener('touchstart',function(e){
+    sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;
+  },{passive:true});
+  gMain.addEventListener('touchmove',function(){moved=true},{passive:true});
+  gMain.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-sx;
+    var dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){
+      /* horizontal swipe: change image, never restricted to only the dots/thumbs */
+      if(dx<0&&gi<imgs.length-1)show(gi+1);
+      else if(dx>0&&gi>0)show(gi-1);
+    } else if(!moved){
+      /* simple tap (no drag) opens the fullscreen gallery */
+      openLightbox(gi);
+    }
+  },{passive:true});
+  /* desktop: clicking the image also opens the lightbox */
+  gMain.addEventListener('click',function(e){
+    if(e.target===expandBtn||expandBtn.contains(e.target))return;
+    openLightbox(gi);
+  });
+  if(expandBtn){
+    expandBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      openLightbox(gi);
+    });
+  }
+})();
+
+/* ── Fullscreen gallery lightbox ── */
+var lb={el:null,img:null,counter:null,thumbsWrap:null,index:0,open:false};
+function initLightbox(){
+  lb.el=document.getElementById('lightbox');
+  lb.img=document.getElementById('lbImg');
+  lb.counter=document.getElementById('lbCounter');
+  lb.thumbsWrap=document.getElementById('lbThumbs');
+  if(!lb.el||!lb.thumbsWrap)return;
+  imgs.forEach(function(o,i){
+    var t=document.createElement('img');
+    t.src=IMGDIR+o.f;
+    t.alt=o.a;
+    t.loading='lazy';
+    t.onclick=function(){lbShow(i)};
+    lb.thumbsWrap.appendChild(t);
+  });
+  /* swipe support inside the lightbox stage */
+  var stage=document.getElementById('lbStage');
+  var sx=0;
+  stage.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
+  stage.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>40){lbNav(dx<0?1:-1)}
+  },{passive:true});
+  document.addEventListener('keydown',function(e){
+    if(!lb.open)return;
+    if(e.key==='Escape')closeLightbox();
+    if(e.key==='ArrowRight')lbNav(1);
+    if(e.key==='ArrowLeft')lbNav(-1);
+  });
+}
+function lbShow(i){
+  lb.index=(i+imgs.length)%imgs.length;
+  lb.img.src=IMGDIR+imgs[lb.index].f;
+  lb.img.alt=imgs[lb.index].a;
+  lb.counter.textContent=(lb.index+1)+' / '+imgs.length;
+  lb.thumbsWrap.querySelectorAll('img').forEach(function(t,k){
+    t.classList.toggle('active',k===lb.index);
+    if(k===lb.index)t.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  });
+}
+function openLightbox(i){
+  if(!lb.el)initLightbox();
+  lbShow(i);
+  lb.el.classList.add('show');
+  lb.open=true;
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  if(!lb.el)return;
+  lb.el.classList.remove('show');
+  lb.open=false;
+  document.body.style.overflow='';
+  /* keep the main gallery in sync with whatever was last viewed in the lightbox */
+  show(lb.index);
+}
+function lbNav(dir){
+  lbShow(lb.index+dir);
+}
+function lbSyncIfOpen(){
+  if(lb.open)lbShow(gi);
+}
+
+/* Why Astra: v5-style swipeable card slider on mobile - manual swipe only (no auto-advance).
+   On desktop (820px+) all three cards show together in a static grid, so swiping is disabled entirely. */
+(function(){
+  var track=document.getElementById('whyTrack');
+  var dots=document.querySelectorAll('.why-dot');
+  var slider=document.getElementById('whySlider');
+  if(!track||!slider)return;
+  var slides=track.querySelectorAll('.why-slide');
+  var total=slides.length;
+  var cur=0,sx=0;
+  var isDesktop=function(){return window.matchMedia('(min-width:820px)').matches};
+
+  function goWhy(n){
+    if(isDesktop())return; /* desktop shows all cards at once - no active slide concept */
+    cur=(n+total)%total; /* wraps both directions so swiping past the last card loops to the first */
+    track.style.transform='translateX(-'+(cur*100)+'%)';
+    dots.forEach(function(d,i){d.classList.toggle('active',i===cur)});
+  }
+  window.goWhy=goWhy;
+
+  /* manual swipe only, on mobile, on the cards themselves - not limited to the dot buttons */
+  slider.addEventListener('touchstart',function(e){if(isDesktop())return;sx=e.touches[0].clientX},{passive:true});
+  slider.addEventListener('touchend',function(e){
+    if(isDesktop())return;
+    var dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>40){goWhy(dx<0?cur+1:cur-1)}
+  },{passive:true});
+})();
 
 
-/* dynamic rotating badge (#5) - v5 exact: Pre-Order / 44% Off / Pre-Order */
+
+/* dynamic rotating badge - cycles: 44% Off / Pre-Order / Bestseller */
 (function(){
   var badge=document.getElementById('dynbadge');
   if(!badge)return;
   var tags=[
-    {text:'Pre-Order',cls:'b-pre'},
     {text:'44% Off',cls:'b-sale'},
-    {text:'Pre-Order',cls:'b-pre'}
+    {text:'Pre-Order',cls:'b-pre'},
+    {text:'Bestseller',cls:'b-best'}
   ];
   var ti=0;
   function cycle(){
@@ -1825,8 +2155,6 @@ function openTrust(key){document.getElementById('tm-'+key).classList.add('show')
 function closeTrust(key){document.getElementById('tm-'+key).classList.remove('show');document.body.style.overflow=''}
 
 /* price breakdown modal (#19) */
-function openPriceModal(){document.getElementById('priceModal').classList.add('show');document.body.style.overflow='hidden'}
-function closePriceModal(){document.getElementById('priceModal').classList.remove('show');document.body.style.overflow=''}
 
 function qty(d){var el=document.getElementById('qtyv');el.value=Math.max(1,Math.min(10,(parseInt(el.value)||1)+d))}
 function copyCode(b){if(navigator.clipboard)navigator.clipboard.writeText('PRIME10');var o=b.textContent;b.textContent='Copied ✓';setTimeout(function(){b.textContent=o},1600)}
@@ -1978,104 +2306,6 @@ setTimeout(openExit,25000);
   setInterval(function(){goQr(ci+1)},4000);
 })();
 
-/* ── Why Astra: freeze when centered, swipe horizontally while frozen, then release ── */
-(function(){
-  var scrollwrap=document.getElementById('whyScrollwrap');
-  var pin=document.getElementById('whyPin');
-  var wrap=document.getElementById('whySlides');
-  var navWrap=document.getElementById('whyNav');
-  if(!scrollwrap||!pin||!wrap||!navWrap)return;
-
-  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var cards=wrap.querySelectorAll('.why-slide');
-  var total=cards.length;
-  var ci=-1,dots=[],ticking=false;
-  var pinHeight=0,freezeDistance=0,centerOffset=0;
-
-  cards.forEach(function(_,i){
-    var d=document.createElement('button');
-    d.className='why-dot'+(i===0?' active':'');
-    d.setAttribute('aria-label','Slide '+(i+1));
-    d.onclick=function(){
-      if(reduce){setSlide(i);return}
-      var wrapTop=scrollwrap.getBoundingClientRect().top+window.scrollY;
-      var per=total>1?freezeDistance/(total-1):0;
-      window.scrollTo({top:wrapTop+centerOffset+i*per,behavior:'smooth'});
-    };
-    navWrap.appendChild(d);
-    dots.push(d);
-  });
-
-  function setSlide(n){
-    if(n===ci)return;
-    ci=n;
-    wrap.style.transform='translateX(-'+(ci*100)+'%)';
-    dots.forEach(function(d,i){d.classList.toggle('active',i===ci)});
-  }
-
-  function measure(){
-    pin.classList.remove('frozen');
-    pin.style.top='0px';
-    pinHeight=pin.offsetHeight;
-    var vh=window.innerHeight;
-    /* distance of scroll needed to swipe through all extra slides, 1 viewport-screen per transition */
-    freezeDistance=(total-1)*vh;
-    /* the pin should freeze once its center reaches the viewport center */
-    centerOffset=(vh-pinHeight)/2;
-    if(centerOffset<0)centerOffset=0;
-    /* total height = space before freeze + freeze travel distance + the card's own height
-       (no extra gap after release - the card simply resumes normal flow there) */
-    scrollwrap.style.height=(centerOffset+freezeDistance+pinHeight)+'px';
-  }
-
-  if(reduce){
-    scrollwrap.style.height='auto';
-    setSlide(0);
-    return;
-  }
-
-  function onScroll(){
-    if(ticking)return;
-    ticking=true;
-    requestAnimationFrame(function(){
-      ticking=false;
-      var wrapRect=scrollwrap.getBoundingClientRect();
-      var wrapTop=wrapRect.top; /* relative to viewport */
-
-      if(wrapTop>centerOffset){
-        /* not yet reached: sits at the natural top of the wrapper */
-        pin.classList.remove('frozen');
-        pin.style.top='0px';
-        setSlide(0);
-        return;
-      }
-      var scrolledIntoFreeze=centerOffset-wrapTop; /* 0 .. freezeDistance */
-      if(scrolledIntoFreeze<0)scrolledIntoFreeze=0;
-
-      if(scrolledIntoFreeze<=freezeDistance){
-        /* FROZEN: pin stays fixed at vertical center of viewport while slides swipe */
-        pin.classList.add('frozen');
-        pin.style.top=centerOffset+'px';
-        var progress=freezeDistance>0?scrolledIntoFreeze/freezeDistance:1;
-        var target=Math.min(total-1,Math.round(progress*(total-1)));
-        setSlide(target);
-      } else {
-        /* past the freeze zone: release back into normal flow at its correct resting offset
-           (matches exactly where the fixed pin left off, so no jump and no gap) */
-        pin.classList.remove('frozen');
-        pin.style.top=(centerOffset+freezeDistance)+'px';
-        setSlide(total-1);
-      }
-    });
-  }
-
-  window.addEventListener('scroll',onScroll,{passive:true});
-  window.addEventListener('resize',function(){measure();onScroll()},{passive:true});
-  /* measure after images load, since pinHeight depends on image aspect ratio */
-  window.addEventListener('load',function(){measure();onScroll()});
-  measure();
-  onScroll();
-})();
 
 /* ── Back to top progress ring ── */
 (function(){
